@@ -22,7 +22,7 @@ class ChessBoard(ttk.Frame):
         square = tk.PhotoImage(width=1, height=1)
         for i in range(8):
             for j in range(8):
-                self.squares[i][j] = tk.Label(self, image=square, width=90, height=90, background=self.colors[(i+j)%2])
+                self.squares[i][j] = tk.Button(self, image=square, width=90, height=90, background=self.colors[(i+j)%2])
                 self.squares[i][j].grid(row=i, column=j)
 
 if __name__ == "__main__":
