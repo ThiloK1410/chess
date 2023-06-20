@@ -12,7 +12,7 @@ class App:
         self._running = True
         self._display_surf = None
 
-        self.boundary_size = 80
+        self.boundary_size = 20
         self.square_size = 80
         self.size = self.square_size*10 + self.boundary_size*2, self.square_size*10 + self.boundary_size*2
 
@@ -35,7 +35,7 @@ class App:
             square = self.get_square_from_coord(mouse_pos)
             print(square)
 
-    # loop which will be executed at fixed rate (for physics and such)
+    # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
         pass
 
