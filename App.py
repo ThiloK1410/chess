@@ -114,7 +114,8 @@ class App:
             return None
         if chess_coordinates[0] < 0 or chess_coordinates[1] < 0:
             return None
-        return 1
+        square = (chess_coordinates[0] // self.square_size, chess_coordinates[1] // self.square_size)
+        return square
 
 
 if __name__ == "__main__":
