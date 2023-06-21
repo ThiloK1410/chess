@@ -122,7 +122,8 @@ class App:
         return square
 
     def square_to_coordinate(self, square):
-        pass
+        coordinates = (square[0]*self.square_size+self.boundary_size,
+                       square[1]*self.square_size+self.boundary_size)
 
 
 if __name__ == "__main__":
