@@ -1,4 +1,3 @@
-import numpy as np
 import pygame
 
 
@@ -32,7 +31,7 @@ class App:
                 pass
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            square = self.get_square_from_coord(mouse_pos)
+            square = self.square_to_coordinate(mouse_pos)
             print(square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
@@ -75,7 +74,6 @@ class App:
     # -------- custom functions below here --------
 
     def draw_chessboard(self):
-        boundary = (self.boundary_size, self.boundary_size)
         # drawing chess squares
         square_colors = [self.colors["ivory"], self.colors["acacia"]]
         for i in range(10):
@@ -119,6 +117,7 @@ class App:
 
     def coordinate_to_square(self, square):
         pass
+
 
 if __name__ == "__main__":
     theApp = App()
