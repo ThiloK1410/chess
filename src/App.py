@@ -107,10 +107,7 @@ class App:
 
         # writing letters in all the bottom squares
         for i, x in enumerate(letters):
-            if i%2 == 0:
-                text_color = self.colors["ivory"]
-            else:
-                text_color = self.colors["acacia"]
+            text_color = square_colors[i%2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
             text_rect.centerx = self.boundary_size + i*self.square_size +self.square_size / 2
@@ -119,10 +116,7 @@ class App:
 
         # writing numbers in all the left squares
         for i, x in enumerate(numbers):
-            if i%2 == 0:
-                text_color = self.colors["acacia"]
-            else:
-                text_color = self.colors["ivory"]
+            text_color = square_colors[(i+1)%2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
             text_rect.centery = self.boundary_size + i*self.square_size +self.square_size / 2
