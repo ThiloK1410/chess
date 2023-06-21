@@ -18,7 +18,7 @@ class App:
         # setting dimensions of the chessboard
         self.boundary_size = 20
         self.square_size = 80
-        self.size = self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2
+        self.size = (self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2)
 
     # called once to start program
     def on_init(self):
@@ -100,15 +100,34 @@ class App:
             end_pos = (i*self.square_size + self.boundary_size, line_length + self.boundary_size)
             pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
 
-        # drawing square names
-        font = pygame.font.SysFont('Times New Roman', 20)
-        text_color = self.colors["ivory"]
-        text_surface = font.render("A", True, text_color)
-        text_rect = text_surface.get_rect()
-        text_rect.center = (self.boundary_size + self.square_size/2, self.boundary_size + 7*self.square_size + 3/4*self.square_size)
-        self.display.blit(text_surface, text_rect)
+        # defining font and content
+        font = pygame.font.SysFont('Arial Black', 12)
+        letters = ("A", "B", "C", "D", "E", "F", "G", "H")
+        numbers = ("8", "7", "6", "5", "4", "3", "2", "1")
 
         # writing letters in all the bottom squares
+        for i, x in enumerate(letters):
+            if i%2 == 0:
+                text_color = self.colors["ivory"]
+            else:
+                text_color = self.colors["acacia"]
+            text_surface = font.render(x, True, text_color)
+            text_rect = text_surface.get_rect()
+            text_rect.centerx = self.boundary_size + i*self.square_size +self.square_size / 2
+            text_rect.bottom = self.boundary_size + 8*self.square_size
+            self.display.blit(text_surface, text_rect)
+
+        # writing numbers in all the left squares
+        for i, x in enumerate(numbers):
+            if i%2 == 0:
+                text_color = self.colors["acacia"]
+            else:
+                text_color = self.colors["ivory"]
+            text_surface = font.render(x, True, text_color)
+            text_rect = text_surface.get_rect()
+            text_rect.centery = self.boundary_size + i*self.square_size +self.square_size / 2
+            text_rect.left = self.boundary_size + 4
+            self.display.blit(text_surface, text_rect)
 
 
     def coordinate_to_square(self, coordinates):
