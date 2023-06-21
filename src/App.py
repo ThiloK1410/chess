@@ -1,4 +1,5 @@
 import pygame
+from Piece import Piece
 
 
 class App:
@@ -20,11 +21,14 @@ class App:
         self.square_size = 80
         self.size = (self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2)
 
+        self.piece = Piece(self, "../pieces/png/b_pawn.png", (3, 3))
+
     # called once to start program
     def on_init(self):
         pygame.init()
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
+
         self.on_execute()
 
     # handles player inputs
@@ -49,6 +53,8 @@ class App:
         self.display.fill(self.colors["ivory"])
 
         self.draw_chessboard()
+
+        self.piece.draw()
 
         pygame.display.update()
 
@@ -107,22 +113,21 @@ class App:
 
         # writing letters in all the bottom squares
         for i, x in enumerate(letters):
-            text_color = square_colors[i%2]
+            text_color = square_colors[i % 2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
-            text_rect.centerx = self.boundary_size + i*self.square_size +self.square_size / 2
+            text_rect.centerx = self.boundary_size + i*self.square_size + self.square_size / 2
             text_rect.bottom = self.boundary_size + 8*self.square_size
             self.display.blit(text_surface, text_rect)
 
         # writing numbers in all the left squares
         for i, x in enumerate(numbers):
-            text_color = square_colors[(i+1)%2]
+            text_color = square_colors[(i+1) % 2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
-            text_rect.centery = self.boundary_size + i*self.square_size +self.square_size / 2
+            text_rect.centery = self.boundary_size + i*self.square_size + self.square_size / 2
             text_rect.left = self.boundary_size + 4
             self.display.blit(text_surface, text_rect)
-
 
     def coordinate_to_square(self, coordinates):
         chess_coordinates = (coordinates[0]-self.boundary_size, coordinates[1]-self.boundary_size)
