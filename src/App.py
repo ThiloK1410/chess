@@ -18,7 +18,7 @@ class App:
         # setting dimensions of the chessboard
         self.boundary_size = 20
         self.square_size = 80
-        self.size = self.square_size*10 + self.boundary_size*2, self.square_size*10 + self.boundary_size*2
+        self.size = self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2
 
     # called once to start program
     def on_init(self):
@@ -82,34 +82,34 @@ class App:
     def draw_chessboard(self):
         # drawing chess squares
         square_colors = [self.colors["ivory"], self.colors["acacia"]]
-        for i in range(10):
-            for j in range(10):
+        for i in range(8):
+            for j in range(8):
                 square = pygame.Rect(i*self.square_size + self.boundary_size, j*self.square_size + self.boundary_size,
                                      self.square_size, self.square_size)
                 pygame.draw.rect(self.display, square_colors[(i+j) % 2], square)
 
         # drawing board outline
         line_thickness = 2
-        line_length = 10 * self.square_size
-        for i in range(11):     # horizontal
+        line_length = 8 * self.square_size
+        for i in range(9):     # horizontal
             start_pos = (self.boundary_size, i*self.square_size + self.boundary_size)
             end_pos = (line_length + self.boundary_size, i*self.square_size + self.boundary_size)
             pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
-        for i in range(11):     # vertical
+        for i in range(9):     # vertical
             start_pos = (i*self.square_size + self.boundary_size, self.boundary_size)
             end_pos = (i*self.square_size + self.boundary_size, line_length + self.boundary_size)
             pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
 
         # drawing square names
-        """
-        font = pygame.font.SysFont('Arial', 48)
-        text_color = self.colors["board_outline"]
+        font = pygame.font.SysFont('Times New Roman', 20)
+        text_color = self.colors["ivory"]
         text_surface = font.render("A", True, text_color)
         text_rect = text_surface.get_rect()
-        text_rect.bottom = 10*self.square_size
-        text_rect.centerx = self.square_size / 2
-        self._display.blit(text_surface, text_rect)
-        """
+        text_rect.center = (self.boundary_size + self.square_size/2, self.boundary_size + 7*self.square_size + 3/4*self.square_size)
+        self.display.blit(text_surface, text_rect)
+
+        # writing letters in all the bottom squares
+
 
     def coordinate_to_square(self, coordinates):
         chess_coordinates = (coordinates[0]-self.boundary_size, coordinates[1]-self.boundary_size)
