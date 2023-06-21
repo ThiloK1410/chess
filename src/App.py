@@ -2,15 +2,20 @@ import pygame
 
 
 class App:
+    # main function from where everything is called
     def __init__(self):
+        # initiating a clock and setting timer of the application
         self.clock = pygame.time.Clock()
         self.fps = 30
         self.time_per_frame = 1000 / self.fps
+
+        # defining colors for the chessboard squares
         self.colors = {"black": (0, 0, 0), "white": (255, 255, 255), "board_outline": (63, 63, 63),
                        "ivory": (255, 233, 197), "acacia": (183, 94, 18)}
         self._running = True
         self.display = None
 
+        # setting dimensions of the chessboard
         self.boundary_size = 20
         self.square_size = 80
         self.size = self.square_size*10 + self.boundary_size*2, self.square_size*10 + self.boundary_size*2
@@ -29,6 +34,7 @@ class App:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 pass
+        # when a mousebutton is clicked, prints coordinates on the chessboard grid to console output
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             square = self.coordinate_to_square(mouse_pos)
