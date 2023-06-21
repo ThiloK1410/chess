@@ -108,6 +108,7 @@ class App:
         text_rect = text_surface.get_rect()
         text_rect.bottom = 10*self.square_size
         text_rect.centerx = self.square_size / 2
+        
         self._display.blit(text_surface, text_rect)
         """
 
@@ -122,7 +123,8 @@ class App:
         return square
 
     def square_to_coordinate(self, square):
-        pass
+        coordinates = (square[0]*self.square_size+self.boundary_size,
+                       square[1]*self.square_size+self.boundary_size)
 
 
 if __name__ == "__main__":
