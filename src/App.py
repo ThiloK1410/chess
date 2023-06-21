@@ -9,7 +9,7 @@ class App:
         self.colors = {"black": (0, 0, 0), "white": (255, 255, 255), "board_outline": (63, 63, 63),
                        "ivory": (255, 233, 197), "acacia": (183, 94, 18)}
         self._running = True
-        self._display = None
+        self.display = None
 
         self.boundary_size = 20
         self.square_size = 80
@@ -18,7 +18,7 @@ class App:
     # called once to start program
     def on_init(self):
         pygame.init()
-        self._display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.on_execute()
 
@@ -31,7 +31,7 @@ class App:
                 pass
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            square = self.square_to_coordinate(mouse_pos)
+            square = self.coordinate_to_square(mouse_pos)
             print(square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
@@ -40,7 +40,7 @@ class App:
 
     # loop which will only be called when enough cpu time is available
     def on_render(self):
-        self._display.fill(self.colors["ivory"])
+        self.display.fill(self.colors["ivory"])
 
         self.draw_chessboard()
 
@@ -80,7 +80,7 @@ class App:
             for j in range(10):
                 square = pygame.Rect(i*self.square_size + self.boundary_size, j*self.square_size + self.boundary_size,
                                      self.square_size, self.square_size)
-                pygame.draw.rect(self._display, square_colors[(i+j) % 2], square)
+                pygame.draw.rect(self.display, square_colors[(i+j) % 2], square)
 
         # drawing board outline
         line_thickness = 2
@@ -88,11 +88,11 @@ class App:
         for i in range(11):     # horizontal
             start_pos = (self.boundary_size, i*self.square_size + self.boundary_size)
             end_pos = (line_length + self.boundary_size, i*self.square_size + self.boundary_size)
-            pygame.draw.line(self._display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
+            pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
         for i in range(11):     # vertical
             start_pos = (i*self.square_size + self.boundary_size, self.boundary_size)
             end_pos = (i*self.square_size + self.boundary_size, line_length + self.boundary_size)
-            pygame.draw.line(self._display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
+            pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
 
         # drawing square names
         """
@@ -105,7 +105,7 @@ class App:
         self._display.blit(text_surface, text_rect)
         """
 
-    def square_to_coordinate(self, coordinates):
+    def coordinate_to_square(self, coordinates):
         chess_coordinates = (coordinates[0]-self.boundary_size, coordinates[1]-self.boundary_size)
         board_size = 10 * self.square_size
         if chess_coordinates[0] > board_size or chess_coordinates[1] > board_size:
@@ -115,7 +115,7 @@ class App:
         square = (chess_coordinates[0] // self.square_size, chess_coordinates[1] // self.square_size)
         return square
 
-    def coordinate_to_square(self, square):
+    def square_to_coordinate(self, square):
         pass
 
 
