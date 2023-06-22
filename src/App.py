@@ -1,3 +1,5 @@
+import os
+
 import pygame
 from Piece import Piece
 
@@ -21,7 +23,7 @@ class App:
         self.square_size = 80
         self.size = (self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2)
 
-        self.piece = Piece(self, "../pieces/png/b_pawn.png", (3, 3))
+        self.board_state = [[None]*8 for i in range(8)]
 
     # called once to start program
     def on_init(self):
