@@ -23,6 +23,15 @@ class App:
         self.square_size = 80
         self.size = (self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2)
 
+        self.temporary_start_layout = [["r", "n", "b", "q", "k", "b", "n", "r"],
+                                       ["p", "p", "p", "p", "p", "p", "p", "p"],
+                                       [None, None, None, None, None, None, None, None],
+                                       [None, None, None, None, None, None, None, None],
+                                       [None, None, None, None, None, None, None, None],
+                                       [None, None, None, None, None, None, None, None],
+                                       ["P", "P", "P", "P", "P", "P", "P", "P"],
+                                       ["R", "N", "B", "Q", "K", "B", "N", "R"]]
+
         self.board_state = [[None]*8 for i in range(8)]
 
     # called once to start program
@@ -30,6 +39,8 @@ class App:
         pygame.init()
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
+
+        self.activate_layout(self.temporary_start_layout)
 
         self.on_execute()
 
@@ -56,7 +67,7 @@ class App:
 
         self.draw_chessboard()
 
-        self.piece.draw()
+        self.draw_chess_pieces(self.board_state)
 
         pygame.display.update()
 
@@ -87,6 +98,7 @@ class App:
 
     # -------- custom functions below here --------
 
+    # draws the empty chessboard interchangeable design variables inside
     def draw_chessboard(self):
         # drawing chess squares
         square_colors = [self.colors["ivory"], self.colors["acacia"]]
@@ -131,6 +143,15 @@ class App:
             text_rect.left = self.boundary_size + 4
             self.display.blit(text_surface, text_rect)
 
+    # draws a given board_state
+    @classmethod
+    def draw_chess_pieces(cls, board_state):
+        for i in board_state:
+            for j in i:
+                if j is not None:
+                    j.draw()
+
+    # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):
         chess_coordinates = (coordinates[0]-self.boundary_size, coordinates[1]-self.boundary_size)
         board_size = 10 * self.square_size
@@ -141,10 +162,20 @@ class App:
         square = (chess_coordinates[0] // self.square_size, chess_coordinates[1] // self.square_size)
         return square
 
+    # converts square indexes to window coordinates
     def square_to_coordinate(self, square):
         coordinates = (square[0]*self.square_size+self.boundary_size,
                        square[1]*self.square_size+self.boundary_size)
         return coordinates
+
+    # gets a 2d array fen-layout as input and sets the board accordingly
+    def activate_layout(self, layout):
+        for row, x in enumerate(self.board_state):
+            for column, element in enumerate(x):
+                if layout[row][column] is None:
+                    self.board_state[row][column] = None
+                else:
+                    self.board_state[row][column] = Piece(self, layout[row][column], (row, column))
 
 
 if __name__ == "__main__":
