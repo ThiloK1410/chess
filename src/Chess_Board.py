@@ -1,7 +1,6 @@
 import pygame
 
 from Chess_Engine import Engine
-from Piece import Piece
 
 
 class App:
@@ -175,15 +174,6 @@ class App:
         coordinates = (square[0] * self.square_size + self.boundary_size,
                        square[1] * self.square_size + self.boundary_size)
         return coordinates
-
-    # gets a 2d array fen-layout as input and sets the board accordingly
-    def activate_layout(self, layout):
-        for row, x in enumerate(self.board_state):
-            for column, element in enumerate(x):
-                if layout[row][column] is None:
-                    self.board_state[row][column] = None
-                else:
-                    self.board_state[row][column] = Piece(self, layout[row][column], (row, column))
 
 
 if __name__ == "__main__":
