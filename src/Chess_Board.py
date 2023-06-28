@@ -1,6 +1,6 @@
-import os
-
 import pygame
+
+from Chess_Engine import Engine
 from Piece import Piece
 
 
@@ -12,27 +12,28 @@ class App:
         self.fps = 30
         self.time_per_frame = 1000 / self.fps
 
+        # Engine for handling all of logic
+        self.engine = Engine()
+
         # defining colors for the chessboard squares
         self.colors = {"black": (0, 0, 0), "white": (255, 255, 255), "board_outline": (63, 63, 63),
                        "ivory": (255, 233, 197), "acacia": (183, 94, 18)}
         self._running = True
         self.display = None
 
+        # images of all chess pieces
+        self.size_factor = 0.7
+        self.piece_types = {"r": "b_rook.png", "n": "b_knight.png", "b": "b_bishop.png",
+                            "q": "b_queen.png", "k": "b_king.png", "p": "b_pawn.png",
+                            "R": "w_rook.png", "N": "w_knight.png", "B": "w_bishop.png",
+                            "Q": "w_queen.png", "K": "w_king.png", "P": "w_pawn.png"}
+
         # setting dimensions of the chessboard
         self.boundary_size = 20
         self.square_size = 80
-        self.size = (self.square_size*8 + self.boundary_size*2, self.square_size*8 + self.boundary_size*2)
+        self.size = (self.square_size * 8 + self.boundary_size * 2, self.square_size * 8 + self.boundary_size * 2)
 
-        self.temporary_start_layout = [["r", "n", "b", "q", "k", "b", "n", "r"],
-                                       ["p", "p", "p", "p", "p", "p", "p", "p"],
-                                       [None, None, None, None, None, None, None, None],
-                                       [None, None, None, None, None, None, None, None],
-                                       [None, None, None, None, None, None, None, None],
-                                       [None, None, None, None, None, None, None, None],
-                                       ["P", "P", "P", "P", "P", "P", "P", "P"],
-                                       ["R", "N", "B", "Q", "K", "B", "N", "R"]]
-
-        self.board_state = [[None]*8 for i in range(8)]
+        self.selected_square = None
 
     # called once to start program
     def on_init(self):
@@ -40,7 +41,7 @@ class App:
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
 
-        self.activate_layout(self.temporary_start_layout)
+        self.engine.set_layout(self.engine.start_layout)
 
         self.on_execute()
 
@@ -51,7 +52,7 @@ class App:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 pass
-        # when a mousebutton is clicked, prints coordinates on the chessboard grid to console output
+        # when a mouse button is clicked, prints coordinates on the chessboard grid to console output
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             square = self.coordinate_to_square(mouse_pos)
@@ -67,7 +68,7 @@ class App:
 
         self.draw_chessboard()
 
-        self.draw_chess_pieces(self.board_state)
+        self.draw_chess_pieces(self.engine.get_layout())
 
         pygame.display.update()
 
@@ -104,20 +105,21 @@ class App:
         square_colors = [self.colors["ivory"], self.colors["acacia"]]
         for i in range(8):
             for j in range(8):
-                square = pygame.Rect(i*self.square_size + self.boundary_size, j*self.square_size + self.boundary_size,
+                square = pygame.Rect(i * self.square_size + self.boundary_size,
+                                     j * self.square_size + self.boundary_size,
                                      self.square_size, self.square_size)
-                pygame.draw.rect(self.display, square_colors[(i+j) % 2], square)
+                pygame.draw.rect(self.display, square_colors[(i + j) % 2], square)
 
         # drawing board outline
         line_thickness = 2
         line_length = 8 * self.square_size
-        for i in range(9):     # horizontal
-            start_pos = (self.boundary_size, i*self.square_size + self.boundary_size)
-            end_pos = (line_length + self.boundary_size, i*self.square_size + self.boundary_size)
+        for i in range(9):  # horizontal
+            start_pos = (self.boundary_size, i * self.square_size + self.boundary_size)
+            end_pos = (line_length + self.boundary_size, i * self.square_size + self.boundary_size)
             pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
-        for i in range(9):     # vertical
-            start_pos = (i*self.square_size + self.boundary_size, self.boundary_size)
-            end_pos = (i*self.square_size + self.boundary_size, line_length + self.boundary_size)
+        for i in range(9):  # vertical
+            start_pos = (i * self.square_size + self.boundary_size, self.boundary_size)
+            end_pos = (i * self.square_size + self.boundary_size, line_length + self.boundary_size)
             pygame.draw.line(self.display, self.colors["board_outline"], start_pos, end_pos, line_thickness)
 
         # defining font and content
@@ -130,30 +132,36 @@ class App:
             text_color = square_colors[i % 2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
-            text_rect.centerx = self.boundary_size + i*self.square_size + self.square_size / 2
-            text_rect.bottom = self.boundary_size + 8*self.square_size
+            text_rect.centerx = self.boundary_size + i * self.square_size + self.square_size / 2
+            text_rect.bottom = self.boundary_size + 8 * self.square_size
             self.display.blit(text_surface, text_rect)
 
         # writing numbers in all the left squares
         for i, x in enumerate(numbers):
-            text_color = square_colors[(i+1) % 2]
+            text_color = square_colors[(i + 1) % 2]
             text_surface = font.render(x, True, text_color)
             text_rect = text_surface.get_rect()
-            text_rect.centery = self.boundary_size + i*self.square_size + self.square_size / 2
+            text_rect.centery = self.boundary_size + i * self.square_size + self.square_size / 2
             text_rect.left = self.boundary_size + 4
             self.display.blit(text_surface, text_rect)
 
     # draws a given board_state
-    @classmethod
-    def draw_chess_pieces(cls, board_state):
-        for i in board_state:
-            for j in i:
+    def draw_chess_pieces(self, board_state):
+        for row, i in enumerate(board_state):
+            for column, j in enumerate(i):
                 if j is not None:
-                    j.draw()
+                    image_path = "../pieces/png/" + self.piece_types[j]
+                    image = pygame.transform.scale(pygame.image.load(image_path), (self.square_size * self.size_factor,
+                                                                                   self.square_size * self.size_factor))
+                    image_rect = image.get_rect()
+                    position = self.square_to_coordinate([row, column])
+                    image_rect.center = (
+                        position[1] + self.square_size / 2, position[0] + self.square_size / 2)
+                    self.display.blit(image, image_rect)
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):
-        chess_coordinates = (coordinates[0]-self.boundary_size, coordinates[1]-self.boundary_size)
+        chess_coordinates = (coordinates[0] - self.boundary_size, coordinates[1] - self.boundary_size)
         board_size = 10 * self.square_size
         if chess_coordinates[0] > board_size or chess_coordinates[1] > board_size:
             return None
@@ -164,8 +172,8 @@ class App:
 
     # converts square indexes to window coordinates
     def square_to_coordinate(self, square):
-        coordinates = (square[0]*self.square_size+self.boundary_size,
-                       square[1]*self.square_size+self.boundary_size)
+        coordinates = (square[0] * self.square_size + self.boundary_size,
+                       square[1] * self.square_size + self.boundary_size)
         return coordinates
 
     # gets a 2d array fen-layout as input and sets the board accordingly
