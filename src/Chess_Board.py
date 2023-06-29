@@ -58,6 +58,7 @@ class App:
             mouse_pos = pygame.mouse.get_pos()
             self.selected_square = self.coordinate_to_square(mouse_pos)
             print(self.selected_square)
+            print(self.engine.is_square_free(self.selected_square))
 
     # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
@@ -159,7 +160,7 @@ class App:
                     image_rect = image.get_rect()
                     position = self.square_to_coordinate([row, column])
                     image_rect.center = (
-                        position[1] + self.square_size / 2, position[0] + self.square_size / 2)
+                        position[0] + self.square_size / 2, position[1] + self.square_size / 2)
                     self.display.blit(image, image_rect)
 
     def draw_valid_moves(self, squares):
@@ -174,7 +175,7 @@ class App:
         for square in squares:
             position = self.square_to_coordinate(square)
             image_rect.center = (
-                position[1] + self.square_size / 2, position[0] + self.square_size / 2
+                position[0] + self.square_size / 2, position[1] + self.square_size / 2
             )
             self.display.blit(image, image_rect)
 
