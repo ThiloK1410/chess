@@ -21,11 +21,13 @@ class App:
         self.display = None
 
         # images of all chess pieces
-        self.size_factor = 0.7
+        self.valid_move_size_factor = 0.5
+        self.size_factor = 0.8
         self.piece_types = {"r": "b_rook.png", "n": "b_knight.png", "b": "b_bishop.png",
                             "q": "b_queen.png", "k": "b_king.png", "p": "b_pawn.png",
                             "R": "w_rook.png", "N": "w_knight.png", "B": "w_bishop.png",
-                            "Q": "w_queen.png", "K": "w_king.png", "P": "w_pawn.png"}
+                            "Q": "w_queen.png", "K": "w_king.png", "P": "w_pawn.png",
+                            "move": "black_circle.png"}
 
         # setting dimensions of the chessboard
         self.boundary_size = 20
@@ -54,8 +56,8 @@ class App:
         # when a mouse button is clicked, prints coordinates on the chessboard grid to console output
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            square = self.coordinate_to_square(mouse_pos)
-            print(square)
+            self.selected_square = self.coordinate_to_square(mouse_pos)
+            print(self.selected_square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
@@ -68,6 +70,8 @@ class App:
         self.draw_chessboard()
 
         self.draw_chess_pieces(self.engine.get_layout())
+
+        self.draw_valid_moves(self.engine.get_valid_moves(self.selected_square))
 
         pygame.display.update()
 
@@ -157,6 +161,22 @@ class App:
                     image_rect.center = (
                         position[1] + self.square_size / 2, position[0] + self.square_size / 2)
                     self.display.blit(image, image_rect)
+
+    def draw_valid_moves(self, squares):
+        if squares is None:
+            print("no valid moves")
+            return
+        path = "../pieces/png/" + self.piece_types["move"]
+        image = pygame.transform.scale(pygame.image.load(path),
+                                       (self.square_size * self.valid_move_size_factor,
+                                        self.square_size * self.valid_move_size_factor))
+        image_rect = image.get_rect()
+        for square in squares:
+            position = self.square_to_coordinate(square)
+            image_rect.center = (
+                position[1] + self.square_size / 2, position[0] + self.square_size / 2
+            )
+            self.display.blit(image, image_rect)
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):
