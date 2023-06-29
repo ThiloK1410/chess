@@ -31,15 +31,7 @@ class MyApp(QWidget):
 app = QApplication(sys.argv)
 
 # style for the applications widgets
-app.setStyleSheet('''
-    QWidget {
-        font-size: 25px;
-    }
-    
-    QPushButtion {
-        font-size: 20px;
-    }
-''')
+app.setStyleSheet("QtStyle.css")
 
 # adds window to the application, MyApp() is the predefined program from above
 window = MyApp()
