@@ -119,10 +119,13 @@ class Engine:
 if __name__ == "__main__":
     engine = Engine()
     engine.set_layout(engine.start_pos)
-    start_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-    example_pos = engine.to_layout(start_fen)
-    for x in example_pos: print(x)
-    transposed = engine.transpose_pos(example_pos)
-    for x in transposed: print(x)
-    print(start_fen)
-    print(engine.to_fen(example_pos))
+
+    # test code used to evaluate fen-2d conversion function
+
+    # start_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    # example_pos = engine.to_layout(start_fen)
+    # for x in example_pos: print(x)
+    # transposed = engine.transpose_pos(example_pos)
+    # for x in transposed: print(x)
+    # print(start_fen)
+    # print(engine.to_fen(example_pos))
