@@ -68,9 +68,33 @@ class Engine:
             return True
         return False
 
+    # transposes an array (mirrors it along its diagonal)
+    def transpose_pos(self, pos):
+        transposed_pos = [[None] * len(pos) for i in range(len(pos[0]))]
+        for x in range(len(pos)):
+            for y in range(len(pos[x])):
+                transposed_pos[x][y] = pos[y][x]
+        return transposed_pos
+
     # function to convert a 2-dimensional layout list into a fen-string
-    def to_fen(self, layout):
-        pass
+    def to_fen(self, pos):
+        fen = ""
+        rows = engine.transpose_pos(pos)
+        allowed = ["r", "R", "p", "P", "k", "K", "q", "Q", "n", "N", "b", "B"]
+        for x in range(len(rows)):
+            empties = 0
+            for y in range(len(rows[x])):
+                if rows[x][y] in allowed:
+                    if empties != 0:
+                        fen += str(empties)
+                        empties = 0
+                    fen += rows[x][y]
+                else:
+                    empties += 1
+            if empties != 0:
+                fen += str(empties)
+            if x != len(rows)-1: fen += "/"
+        return fen
 
     # function to convert fen-notation strings into a 2-dimensional layout list
     def to_layout(self, fen):
@@ -95,7 +119,10 @@ class Engine:
 if __name__ == "__main__":
     engine = Engine()
     engine.set_layout(engine.start_pos)
-    example_layout = engine.to_layout("r1b2bnr/ppp1p1pp/2q3k1/1n2p3/2BPP1p1/1NBQ1Q2/PPP2PPP/R3K1NR")
-    for x in example_layout:
-        print(x)
-    pass
+    start_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    example_pos = engine.to_layout(start_fen)
+    for x in example_pos: print(x)
+    transposed = engine.transpose_pos(example_pos)
+    for x in transposed: print(x)
+    print(start_fen)
+    print(engine.to_fen(example_pos))
