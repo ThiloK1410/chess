@@ -31,7 +31,9 @@ class MyApp(QWidget):
 app = QApplication(sys.argv)
 
 # style for the applications widgets
-app.setStyleSheet("QtStyle.css")
+css = "QtStyle.css"
+with open(css, "r") as fh:
+    app.setStyleSheet(fh.read())
 
 # adds window to the application, MyApp() is the predefined program from above
 window = MyApp()
