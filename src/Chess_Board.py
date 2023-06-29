@@ -42,7 +42,7 @@ class App:
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
 
-        self.engine.set_layout(self.engine.start_layout)
+        self.engine.set_layout(self.engine.start_pos)
 
         self.on_execute()
 
