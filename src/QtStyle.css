@@ -1,3 +1,15 @@
+* {
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+QLabel {
+    font-size: 22px;
+}
+
+QLabel#timer_label, QLabel#incr_label {
+    margin-left: 50px;
+}
+
 QWidget {
     font-size: 20px;
 }
