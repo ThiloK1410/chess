@@ -42,7 +42,7 @@ class App:
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
 
-        self.engine.set_layout(self.engine.start_pos)
+        self.engine.set_layout(self.engine.test_layout)
 
         self.on_execute()
 
@@ -163,7 +163,9 @@ class App:
                         position[0] + self.square_size / 2, position[1] + self.square_size / 2)
                     self.display.blit(image, image_rect)
 
+    # draws a given list of valid moves
     def draw_valid_moves(self, squares):
+        # moves
         if squares is None:
             print("no valid moves")
             return
@@ -172,12 +174,13 @@ class App:
                                        (self.square_size * self.valid_move_size_factor,
                                         self.square_size * self.valid_move_size_factor))
         image_rect = image.get_rect()
-        for square in squares:
+        for square in squares[0]:
             position = self.square_to_coordinate(square)
             image_rect.center = (
                 position[0] + self.square_size / 2, position[1] + self.square_size / 2
             )
             self.display.blit(image, image_rect)
+        # takes
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):
