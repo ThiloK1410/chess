@@ -64,7 +64,7 @@ class GUI(QWidget):
         self.toggle_custom_settings(False)
 
         # Apply styles from a CSS file
-        with open("QtStyle.css", "r") as fh:
+        with open("style.css", "r") as fh:
             app.setStyleSheet(fh.read())
 
     def set_current_timer(self, timer, increment):
