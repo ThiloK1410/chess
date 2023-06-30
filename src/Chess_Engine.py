@@ -15,9 +15,9 @@ class Engine:
         self.test_layout = [[None, None, None, None, None, None, None, None],
                             [None, "R", None, None, None, None, "r", None],
                             [None, None, None, None, None, None, None, None],
+                            [None, "Q", None, None, "b", None, None, None],
                             [None, None, None, None, None, None, None, None],
-                            [None, None, None, None, None, None, None, None],
-                            [None, None, None, None, None, None, None, None],
+                            [None, None, None, "n", None, None, "K", None],
                             [None, None, None, None, None, None, None, None],
                             [None, None, None, None, None, None, None, None]]
 
@@ -52,6 +52,10 @@ class Engine:
                         p_square = [square[0], square[1] - 2]
                         if self.is_square_free(p_square):
                             moves[0].append(p_square)
+                    p_squares = [[square[0] + 1, square[1] - 1], [square[0] - 1, square[1] - 1]]
+                    for p_square in p_squares:
+                        if self.has_opposite_color(square, p_square):
+                            moves[1].append(p_square)
                 else:
                     # black moves
                     p_square = [square[0], square[1] + 1]
@@ -61,6 +65,10 @@ class Engine:
                         p_square = [square[0], square[1] + 2]
                         if self.is_square_free(p_square):
                             moves[0].append(p_square)
+                    p_squares = [[square[0] + 1, square[1] + 1], [square[0] - 1, square[1] + 1]]
+                    for p_square in p_squares:
+                        if self.has_opposite_color(square, p_square):
+                            moves[1].append(p_square)
 
             case "r":
                 for direction in range(4):
@@ -70,41 +78,173 @@ class Engine:
                             p_square = [p_square[0], p_square[1] - 1]
                             if self.is_square_free(p_square):
                                 moves[0].append(p_square)
+                                continue
                             elif self.has_opposite_color(square, p_square):
                                 moves[1].append(p_square)
-                                break
+                            break
                     if direction == 1:
                         while self.square_in_bounds([p_square[0] + 1, p_square[1]]):
                             p_square = [p_square[0] + 1, p_square[1]]
                             if self.is_square_free(p_square):
                                 moves[0].append(p_square)
+                                continue
                             elif self.has_opposite_color(square, p_square):
                                 moves[1].append(p_square)
-                                break
+                            break
                     if direction == 2:
                         while self.square_in_bounds([p_square[0], p_square[1] + 1]):
                             p_square = [p_square[0], p_square[1] + 1]
                             if self.is_square_free(p_square):
                                 moves[0].append(p_square)
+                                continue
                             elif self.has_opposite_color(square, p_square):
                                 moves[1].append(p_square)
-                                break
+                            break
                     if direction == 3:
                         while self.square_in_bounds([p_square[0] - 1, p_square[1]]):
                             p_square = [p_square[0] - 1, p_square[1]]
                             if self.is_square_free(p_square):
                                 moves[0].append(p_square)
+                                continue
                             elif self.has_opposite_color(square, p_square):
                                 moves[1].append(p_square)
-                                break
+                            break
             case "n":
-                pass
+                p_squares = [[square[0] + 1, square[1] - 2], [square[0] - 1, square[1] - 2],
+                             [square[0] + 1, square[1] + 2], [square[0] - 1, square[1] + 2],
+                             [square[0] + 2, square[1] + 1], [square[0] + 2, square[1] - 1],
+                             [square[0] - 2, square[1] + 1], [square[0] - 2, square[1] - 1]]
+                for p_square in p_squares:
+                    if self.is_square_free(p_square):
+                        moves[0].append(p_square)
+                    elif self.has_opposite_color(square, p_square):
+                        moves[1].append(p_square)
             case "b":
-                pass
+                for direction in range(4):
+                    p_square = square
+                    if direction == 0:
+                        while self.square_in_bounds([p_square[0] - 1, p_square[1] - 1]):
+                            p_square = [p_square[0] - 1, p_square[1] - 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 1:
+                        while self.square_in_bounds([p_square[0] + 1, p_square[1] - 1]):
+                            p_square = [p_square[0] + 1, p_square[1] - 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 2:
+                        while self.square_in_bounds([p_square[0] + 1, p_square[1] + 1]):
+                            p_square = [p_square[0] + 1, p_square[1] + 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 3:
+                        while self.square_in_bounds([p_square[0] - 1, p_square[1] + 1]):
+                            p_square = [p_square[0] - 1, p_square[1] + 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
             case "q":
-                pass
+                for direction in range(4):
+                    p_square = square
+                    if direction == 0:
+                        while self.square_in_bounds([p_square[0], p_square[1] - 1]):
+                            p_square = [p_square[0], p_square[1] - 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 1:
+                        while self.square_in_bounds([p_square[0] + 1, p_square[1]]):
+                            p_square = [p_square[0] + 1, p_square[1]]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 2:
+                        while self.square_in_bounds([p_square[0], p_square[1] + 1]):
+                            p_square = [p_square[0], p_square[1] + 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 3:
+                        while self.square_in_bounds([p_square[0] - 1, p_square[1]]):
+                            p_square = [p_square[0] - 1, p_square[1]]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                for direction in range(4):
+                    p_square = square
+                    if direction == 0:
+                        while self.square_in_bounds([p_square[0] - 1, p_square[1] - 1]):
+                            p_square = [p_square[0] - 1, p_square[1] - 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 1:
+                        while self.square_in_bounds([p_square[0] + 1, p_square[1] - 1]):
+                            p_square = [p_square[0] + 1, p_square[1] - 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 2:
+                        while self.square_in_bounds([p_square[0] + 1, p_square[1] + 1]):
+                            p_square = [p_square[0] + 1, p_square[1] + 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
+                    if direction == 3:
+                        while self.square_in_bounds([p_square[0] - 1, p_square[1] + 1]):
+                            p_square = [p_square[0] - 1, p_square[1] + 1]
+                            if self.is_square_free(p_square):
+                                moves[0].append(p_square)
+                                continue
+                            elif self.has_opposite_color(square, p_square):
+                                moves[1].append(p_square)
+                            break
             case "k":
-                pass
+                p_squares = [[square[0] + 1, square[1] + 1], [square[0], square[1] + 1],
+                             [square[0] - 1, square[1] + 1], [square[0] - 1, square[1]],
+                             [square[0] - 1, square[1] - 1], [square[0], square[1] - 1],
+                             [square[0] + 1, square[1] - 1], [square[0] + 1, square[1]]]
+                for p_square in p_squares:
+                    if self.is_square_free(p_square):
+                        moves[0].append(p_square)
+                    elif self.has_opposite_color(square, p_square):
+                        moves[1].append(p_square)
         return moves
 
     def is_square_free(self, square):
