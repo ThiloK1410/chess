@@ -21,6 +21,7 @@ class App:
         self.display = None
 
         # images of all chess pieces
+        self.valid_moves = []
         self.valid_move_size_factor = 0.5
         self.size_factor = 0.8
         self.piece_types = {"r": "b_rook.png", "n": "b_knight.png", "b": "b_bishop.png",
@@ -42,7 +43,7 @@ class App:
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
 
-        self.engine.set_layout(self.engine.test_layout)
+        self.engine.set_layout(self.engine.start_pos)
 
         self.on_execute()
 
@@ -55,10 +56,16 @@ class App:
                 pass
         # when a mouse button is clicked, prints coordinates on the chessboard grid to console output
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            self.selected_square = self.coordinate_to_square(mouse_pos)
-            print(self.selected_square)
-            print(self.engine.is_square_free(self.selected_square))
+            mouse_buttons = pygame.mouse.get_pressed(5)
+            if mouse_buttons[0]:
+                mouse_pos = pygame.mouse.get_pos()
+                square = list(self.coordinate_to_square(mouse_pos))
+                if square in self.valid_moves[0]:
+                    self.engine.make_move([self.selected_square, square])
+                    self.selected_square = None
+                else:
+                    self.selected_square = square
+                print(self.selected_square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
@@ -72,7 +79,8 @@ class App:
 
         self.draw_chess_pieces(self.engine.get_layout())
 
-        self.draw_valid_moves(self.engine.get_valid_moves(self.selected_square))
+        self.valid_moves = self.engine.get_valid_moves(self.selected_square)
+        self.draw_valid_moves(self.valid_moves)
 
         pygame.display.update()
 

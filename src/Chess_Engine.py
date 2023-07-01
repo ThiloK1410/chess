@@ -245,11 +245,22 @@ class Engine:
                         moves[0].append(p_square)
                     elif self.has_opposite_color(square, p_square):
                         moves[1].append(p_square)
-        return moves
+
+        out = [[], []]
+        for i in moves[0]:
+            if self.square_in_bounds(i):
+                out[0].append(i)
+        return out
+
+    def make_move(self, move, allow_invalid=False):
+        if (move[1] in self.get_valid_moves(move[0])[0]) or allow_invalid:
+            self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
+            self._current_pos[move[0][0]][move[0][1]] = None
 
     def is_square_free(self, square):
-        if self._current_pos[square[0]][square[1]] is None:
-            return True
+        if self.square_in_bounds(square):
+            if self._current_pos[square[0]][square[1]] is None:
+                return True
         return False
 
     # returns True if white, False if black and None if square is empty
@@ -264,10 +275,11 @@ class Engine:
     def has_opposite_color(self, square1, square2):
         if self.is_square_free(square1) or self.is_square_free(square2):
             return False
-        piece1 = self._current_pos[square1[0]][square1[1]]
-        piece2 = self._current_pos[square2[0]][square2[1]]
-        if self.is_white(piece1) == (not self.is_white(piece2)):
-            return True
+        if self.square_in_bounds(square1) and self.square_in_bounds(square2):
+            piece1 = self._current_pos[square1[0]][square1[1]]
+            piece2 = self._current_pos[square2[0]][square2[1]]
+            if self.is_white(piece1) == (not self.is_white(piece2)):
+                return True
         return False
 
     def square_in_bounds(self, square):
