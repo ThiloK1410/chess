@@ -28,7 +28,7 @@ class App:
                             "q": "b_queen.png", "k": "b_king.png", "p": "b_pawn.png",
                             "R": "w_rook.png", "N": "w_knight.png", "B": "w_bishop.png",
                             "Q": "w_queen.png", "K": "w_king.png", "P": "w_pawn.png",
-                            "move": "black_circle.png"}
+                            "move": "black_circle.png", "take": "red_square.png"}
 
         # setting dimensions of the chessboard
         self.boundary_size = 20
@@ -77,10 +77,10 @@ class App:
 
         self.draw_chessboard()
 
-        self.draw_chess_pieces(self.engine.get_layout())
-
         self.valid_moves = self.engine.get_valid_moves(self.selected_square)
         self.draw_valid_moves(self.valid_moves)
+
+        self.draw_chess_pieces(self.engine.get_layout())
 
         pygame.display.update()
 
@@ -173,7 +173,6 @@ class App:
 
     # draws a given list of valid moves
     def draw_valid_moves(self, squares):
-        # moves
         if squares is None:
             print("no valid moves")
             return
@@ -188,7 +187,6 @@ class App:
                 position[0] + self.square_size / 2, position[1] + self.square_size / 2
             )
             self.display.blit(image, image_rect)
-        # takes
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):

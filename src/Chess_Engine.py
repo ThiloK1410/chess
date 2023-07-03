@@ -2,6 +2,7 @@ class Engine:
     def __init__(self):
         self._current_pos = [[""] * 8 for i in range(8)]
         self.current_mode = "play"
+        self.current_turn = 0
 
         self.start_pos = [['r', 'p', None, None, None, None, 'P', 'R'],
                           ['n', 'p', None, None, None, None, 'P', 'N'],
@@ -35,6 +36,8 @@ class Engine:
             return [[], []]
         piece = self._current_pos[square[0]][square[1]]
         if piece is None:
+            return [[], []]
+        if not (self.is_white(piece) == self.is_whites_turn()):
             return [[], []]
 
         is_white = True if piece.isupper() else False
@@ -253,9 +256,11 @@ class Engine:
         return out
 
     def make_move(self, move, allow_invalid=False):
-        if (move[1] in self.get_valid_moves(move[0])[0]) or allow_invalid:
-            self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
-            self._current_pos[move[0][0]][move[0][1]] = None
+        if self.is_white(self._current_pos[move[0][0]][move[0][1]]) != bool(self.current_turn % 2):
+            if (move[1] in self.get_valid_moves(move[0])[0]) or allow_invalid:
+                self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
+                self._current_pos[move[0][0]][move[0][1]] = None
+                self.current_turn += 1
 
     def is_square_free(self, square):
         if self.square_in_bounds(square):
@@ -270,6 +275,9 @@ class Engine:
         if piece.isupper():
             return True
         return False
+
+    def is_whites_turn(self):
+        return not bool(self.current_turn % 2)
 
     # returns True only when both squares are occupied and pieces are of different colors (False otherwise)
     def has_opposite_color(self, square1, square2):
