@@ -60,12 +60,11 @@ class App:
             if mouse_buttons[0]:
                 mouse_pos = pygame.mouse.get_pos()
                 square = list(self.coordinate_to_square(mouse_pos))
-                if square in self.valid_moves[0]:
+                if (square in self.valid_moves[0]) or (square in self.valid_moves[1]):
                     self.engine.make_move([self.selected_square, square])
                     self.selected_square = None
                 else:
                     self.selected_square = square
-                print(self.selected_square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
@@ -187,6 +186,18 @@ class App:
                 position[0] + self.square_size / 2, position[1] + self.square_size / 2
             )
             self.display.blit(image, image_rect)
+
+        path = "../pieces/png/" + self.piece_types["take"]
+        image = pygame.transform.scale(pygame.image.load(path),
+                                       (self.square_size, self.square_size))
+        image_rect = image.get_rect()
+        for square in squares[1]:
+            position = self.square_to_coordinate(square)
+            image_rect.center = (
+                position[0] + self.square_size / 2, position[1] + self.square_size / 2
+            )
+            self.display.blit(image, image_rect)
+
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):

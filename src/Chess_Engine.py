@@ -253,14 +253,16 @@ class Engine:
         for i in moves[0]:
             if self.square_in_bounds(i):
                 out[0].append(i)
+        out[1] = moves[1]
         return out
 
-    def make_move(self, move, allow_invalid=False):
+    def make_move(self, move):
         if self.is_white(self._current_pos[move[0][0]][move[0][1]]) != bool(self.current_turn % 2):
-            if (move[1] in self.get_valid_moves(move[0])[0]) or allow_invalid:
+            if (move[1] in self.get_valid_moves(move[0])[0]) or (move[1] in self.get_valid_moves(move[0])[1]):
                 self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
                 self._current_pos[move[0][0]][move[0][1]] = None
                 self.current_turn += 1
+
 
     def is_square_free(self, square):
         if self.square_in_bounds(square):
