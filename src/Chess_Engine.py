@@ -13,14 +13,14 @@ class Engine:
                           ['n', 'p', None, None, None, None, 'P', 'N'],
                           ['r', 'p', None, None, None, None, 'P', 'R']]
 
-        self.test_layout = [[None, None, None, None, None, None, None, None],
-                            [None, "R", None, None, None, None, "r", None],
+        self.test_layout = [[None, None, None, "q", None, None, None, None],
                             [None, None, None, None, None, None, None, None],
-                            [None, "Q", None, None, "b", None, None, None],
                             [None, None, None, None, None, None, None, None],
-                            [None, None, None, "n", None, None, "K", None],
                             [None, None, None, None, None, None, None, None],
-                            [None, None, None, None, None, None, None, None]]
+                            [None, None, None, None, None, None, None, None],
+                            [None, None, None, None, None, None, None, "R"],
+                            [None, None, None, None, None, "N", None, None],
+                            [None, "B", None, "K", None, None, None, None]]
 
     def get_layout(self):
         return self._current_pos
@@ -29,6 +29,195 @@ class Engine:
         for i in range(8):
             for j in range(8):
                 self._current_pos[i][j] = layout[i][j]
+
+    def moves_pawn(self, position, moves, layout, is_white):
+        if is_white:
+            # white moves
+            p_square = [position[0], position[1] - 1]
+            if self.is_square_free(p_square, layout):
+                moves[0].append(p_square)
+            if position[1] == 6:
+                p_square = [position[0], position[1] - 2]
+                if self.is_square_free(p_square, layout):
+                    moves[0].append(p_square)
+            p_squares = [[position[0] + 1, position[1] - 1], [position[0] - 1, position[1] - 1]]
+            for p_square in p_squares:
+                if self.has_opposite_color(position, p_square, layout):
+                    moves[1].append(p_square)
+        else:
+            # black moves
+            p_square = [position[0], position[1] + 1]
+            if self.is_square_free(p_square, layout):
+                moves[0].append(p_square)
+            if position[1] == 1:
+                p_square = [position[0], position[1] + 2]
+                if self.is_square_free(p_square, layout):
+                    moves[0].append(p_square)
+            p_squares = [[position[0] + 1, position[1] + 1], [position[0] - 1, position[1] + 1]]
+            for p_square in p_squares:
+                if self.has_opposite_color(position, p_square, layout):
+                    moves[1].append(p_square)
+
+    def moves_rook(self, position, moves, layout):
+        for direction in range(4):
+            p_square = position
+            if direction == 0:
+                while self.square_in_bounds([p_square[0], p_square[1] - 1]):
+                    p_square = [p_square[0], p_square[1] - 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 1:
+                while self.square_in_bounds([p_square[0] + 1, p_square[1]]):
+                    p_square = [p_square[0] + 1, p_square[1]]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 2:
+                while self.square_in_bounds([p_square[0], p_square[1] + 1]):
+                    p_square = [p_square[0], p_square[1] + 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 3:
+                while self.square_in_bounds([p_square[0] - 1, p_square[1]]):
+                    p_square = [p_square[0] - 1, p_square[1]]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+
+    def moves_knight(self, position, moves, layout):
+        p_squares = [[position[0] + 1, position[1] - 2], [position[0] - 1, position[1] - 2],
+                     [position[0] + 1, position[1] + 2], [position[0] - 1, position[1] + 2],
+                     [position[0] + 2, position[1] + 1], [position[0] + 2, position[1] - 1],
+                     [position[0] - 2, position[1] + 1], [position[0] - 2, position[1] - 1]]
+        for p_square in p_squares:
+            if self.is_square_free(p_square, layout):
+                moves[0].append(p_square)
+            elif self.has_opposite_color(position, p_square, layout):
+                moves[1].append(p_square)
+
+    def moves_bishop(self, position, moves, layout):
+        for direction in range(4):
+            p_square = position
+            if direction == 0:
+                while self.square_in_bounds([p_square[0] - 1, p_square[1] - 1]):
+                    p_square = [p_square[0] - 1, p_square[1] - 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 1:
+                while self.square_in_bounds([p_square[0] + 1, p_square[1] - 1]):
+                    p_square = [p_square[0] + 1, p_square[1] - 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 2:
+                while self.square_in_bounds([p_square[0] + 1, p_square[1] + 1]):
+                    p_square = [p_square[0] + 1, p_square[1] + 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+            if direction == 3:
+                while self.square_in_bounds([p_square[0] - 1, p_square[1] + 1]):
+                    p_square = [p_square[0] - 1, p_square[1] + 1]
+                    if self.is_square_free(p_square, layout):
+                        moves[0].append(p_square)
+                        continue
+                    elif self.has_opposite_color(position, p_square, layout):
+                        moves[1].append(p_square)
+                    break
+
+    def moves_king(self, position, moves, layout):
+        p_squares = [[position[0] + 1, position[1] + 1], [position[0], position[1] + 1],
+                     [position[0] - 1, position[1] + 1], [position[0] - 1, position[1]],
+                     [position[0] - 1, position[1] - 1], [position[0], position[1] - 1],
+                     [position[0] + 1, position[1] - 1], [position[0] + 1, position[1]]]
+        for p_square in p_squares:
+            if self.is_square_free(p_square, layout):
+                moves[0].append(p_square)
+            elif self.has_opposite_color(position, p_square, layout):
+                moves[1].append(p_square)
+
+    def is_in_check(self, layout, white): 
+        moves = [[], []]
+        king_pos = []
+        # search for the king
+        for i in range(8):
+            for j in range(8):
+                # is square occupied?
+                if layout[i][j] is not None:
+                    # is there a king on the square?
+                    if layout[i][j].lower() == "k":
+                        # is the king of the correct color?
+                        if layout[i][j].isupper() == white:
+                            king_pos = [i, j]
+                            break
+
+        # checking for checks by looking backwards if pieces hit king
+        self.moves_pawn(king_pos, moves, layout, white)
+        for x in moves[1]:
+            piece = layout[x[0]][x[1]]
+            if piece is not None:
+                if piece.lower() == "p":
+                    if piece.islower() == white:
+                        return True
+        moves = [[], []]
+        self.moves_rook(king_pos, moves, layout)
+        for x in moves[1]:
+            piece = layout[x[0]][x[1]]
+            if piece is not None:
+                if piece.lower() == "r" or piece.lower() == "q":
+                    if piece.islower() == white:
+                        return True
+        moves = [[], []]
+        self.moves_bishop(king_pos, moves, layout)
+        for x in moves[1]:
+            piece = layout[x[0]][x[1]]
+            if piece is not None:
+                if piece.lower() == "b" or piece.lower() == "q":
+                    if piece.islower() == white:
+                        return True
+        moves = [[], []]
+        self.moves_knight(king_pos, moves, layout)
+        for x in moves[1]:
+            piece = layout[x[0]][x[1]]
+            if piece is not None:
+                if piece.lower() == "n":
+                    if piece.islower() == white:
+                        return True
+        moves = [[], []]
+        self.moves_king(king_pos, moves, layout)
+        for x in moves[1]:
+            piece = layout[x[0]][x[1]]
+            if piece is not None:
+                if piece.lower() == "k":
+                    if piece.islower() == white:
+                        return True
+
+        return False
+
 
     # core method of Chess_Engine, used for getting all valid moves for a given square (can be empty square)
     def get_valid_moves(self, square):
@@ -40,220 +229,35 @@ class Engine:
         if not (self.is_white(piece) == self.is_whites_turn()):
             return [[], []]
 
-        is_white = True if piece.isupper() else False
-
         moves = [[], []]
 
+        # adding different move sets according to piece type
         match piece.lower():
             case "p":
-                if is_white:
-                    # white moves
-                    p_square = [square[0], square[1] - 1]
-                    if self.is_square_free(p_square):
-                        moves[0].append(p_square)
-                    if square[1] == 6:
-                        p_square = [square[0], square[1] - 2]
-                        if self.is_square_free(p_square):
-                            moves[0].append(p_square)
-                    p_squares = [[square[0] + 1, square[1] - 1], [square[0] - 1, square[1] - 1]]
-                    for p_square in p_squares:
-                        if self.has_opposite_color(square, p_square):
-                            moves[1].append(p_square)
-                else:
-                    # black moves
-                    p_square = [square[0], square[1] + 1]
-                    if self.is_square_free(p_square):
-                        moves[0].append(p_square)
-                    if square[1] == 1:
-                        p_square = [square[0], square[1] + 2]
-                        if self.is_square_free(p_square):
-                            moves[0].append(p_square)
-                    p_squares = [[square[0] + 1, square[1] + 1], [square[0] - 1, square[1] + 1]]
-                    for p_square in p_squares:
-                        if self.has_opposite_color(square, p_square):
-                            moves[1].append(p_square)
-
+                self.moves_pawn(square, moves, self._current_pos, self.is_white(piece))
             case "r":
-                for direction in range(4):
-                    p_square = square
-                    if direction == 0:
-                        while self.square_in_bounds([p_square[0], p_square[1] - 1]):
-                            p_square = [p_square[0], p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 1:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1]]):
-                            p_square = [p_square[0] + 1, p_square[1]]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 2:
-                        while self.square_in_bounds([p_square[0], p_square[1] + 1]):
-                            p_square = [p_square[0], p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 3:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1]]):
-                            p_square = [p_square[0] - 1, p_square[1]]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
+                self.moves_rook(square, moves, self._current_pos)
             case "n":
-                p_squares = [[square[0] + 1, square[1] - 2], [square[0] - 1, square[1] - 2],
-                             [square[0] + 1, square[1] + 2], [square[0] - 1, square[1] + 2],
-                             [square[0] + 2, square[1] + 1], [square[0] + 2, square[1] - 1],
-                             [square[0] - 2, square[1] + 1], [square[0] - 2, square[1] - 1]]
-                for p_square in p_squares:
-                    if self.is_square_free(p_square):
-                        moves[0].append(p_square)
-                    elif self.has_opposite_color(square, p_square):
-                        moves[1].append(p_square)
+                self.moves_knight(square, moves, self._current_pos)
             case "b":
-                for direction in range(4):
-                    p_square = square
-                    if direction == 0:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1] - 1]):
-                            p_square = [p_square[0] - 1, p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 1:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1] - 1]):
-                            p_square = [p_square[0] + 1, p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 2:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1] + 1]):
-                            p_square = [p_square[0] + 1, p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 3:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1] + 1]):
-                            p_square = [p_square[0] - 1, p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
+                self.moves_bishop(square, moves, self._current_pos)
             case "q":
-                for direction in range(4):
-                    p_square = square
-                    if direction == 0:
-                        while self.square_in_bounds([p_square[0], p_square[1] - 1]):
-                            p_square = [p_square[0], p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 1:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1]]):
-                            p_square = [p_square[0] + 1, p_square[1]]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 2:
-                        while self.square_in_bounds([p_square[0], p_square[1] + 1]):
-                            p_square = [p_square[0], p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 3:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1]]):
-                            p_square = [p_square[0] - 1, p_square[1]]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                for direction in range(4):
-                    p_square = square
-                    if direction == 0:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1] - 1]):
-                            p_square = [p_square[0] - 1, p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 1:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1] - 1]):
-                            p_square = [p_square[0] + 1, p_square[1] - 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 2:
-                        while self.square_in_bounds([p_square[0] + 1, p_square[1] + 1]):
-                            p_square = [p_square[0] + 1, p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
-                    if direction == 3:
-                        while self.square_in_bounds([p_square[0] - 1, p_square[1] + 1]):
-                            p_square = [p_square[0] - 1, p_square[1] + 1]
-                            if self.is_square_free(p_square):
-                                moves[0].append(p_square)
-                                continue
-                            elif self.has_opposite_color(square, p_square):
-                                moves[1].append(p_square)
-                            break
+                self.moves_rook(square, moves, self._current_pos)
+                self.moves_bishop(square, moves, self._current_pos)
             case "k":
-                p_squares = [[square[0] + 1, square[1] + 1], [square[0], square[1] + 1],
-                             [square[0] - 1, square[1] + 1], [square[0] - 1, square[1]],
-                             [square[0] - 1, square[1] - 1], [square[0], square[1] - 1],
-                             [square[0] + 1, square[1] - 1], [square[0] + 1, square[1]]]
-                for p_square in p_squares:
-                    if self.is_square_free(p_square):
-                        moves[0].append(p_square)
-                    elif self.has_opposite_color(square, p_square):
-                        moves[1].append(p_square)
+                self.moves_king(square, moves, self._current_pos)
 
         out = [[], []]
-        for i in moves[0]:
-            if self.square_in_bounds(i):
-                out[0].append(i)
-        out[1] = moves[1]
+        # filtering out invalid moves (out of bounds, king sacrifice)
+        for i in range(2):
+            for move in moves[i]:
+                # is the move within board boundaries?
+                if self.square_in_bounds(move):
+                    # will the move put your king in check?
+                    next_layout = self.get_next_layout([square, move])
+                    if not self.is_in_check(next_layout, self.is_white(piece)):
+                        out[i].append(move)
+
         return out
 
     def make_move(self, move):
@@ -263,10 +267,19 @@ class Engine:
                 self._current_pos[move[0][0]][move[0][1]] = None
                 self.current_turn += 1
 
+    # returns the possible layout after a specific move would be done
+    def get_next_layout(self, move):
+        layout = [row[:] for row in self._current_pos]
+        # checking if there is a piece to move
+        if layout[move[0][0]][move[0][1]] is None:
+            raise ValueError("Layout for invalid move requested")
+        layout[move[1][0]][move[1][1]] = layout[move[0][0]][move[0][1]]
+        layout[move[0][0]][move[0][1]] = None
+        return layout
 
-    def is_square_free(self, square):
+    def is_square_free(self, square, layout):
         if self.square_in_bounds(square):
-            if self._current_pos[square[0]][square[1]] is None:
+            if layout[square[0]][square[1]] is None:
                 return True
         return False
 
@@ -282,12 +295,12 @@ class Engine:
         return not bool(self.current_turn % 2)
 
     # returns True only when both squares are occupied and pieces are of different colors (False otherwise)
-    def has_opposite_color(self, square1, square2):
-        if self.is_square_free(square1) or self.is_square_free(square2):
+    def has_opposite_color(self, square1, square2, layout):
+        if self.is_square_free(square1, layout) or self.is_square_free(square2, layout):
             return False
         if self.square_in_bounds(square1) and self.square_in_bounds(square2):
-            piece1 = self._current_pos[square1[0]][square1[1]]
-            piece2 = self._current_pos[square2[0]][square2[1]]
+            piece1 = layout[square1[0]][square1[1]]
+            piece2 = layout[square2[0]][square2[1]]
             if self.is_white(piece1) == (not self.is_white(piece2)):
                 return True
         return False

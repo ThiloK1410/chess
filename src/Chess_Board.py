@@ -21,7 +21,7 @@ class App:
         self.display = None
 
         # images of all chess pieces
-        self.valid_moves = []
+        self.valid_moves = [[], []]
         self.valid_move_size_factor = 0.5
         self.size_factor = 0.8
         self.piece_types = {"r": "b_rook.png", "n": "b_knight.png", "b": "b_bishop.png",
@@ -63,8 +63,10 @@ class App:
                 if (square in self.valid_moves[0]) or (square in self.valid_moves[1]):
                     self.engine.make_move([self.selected_square, square])
                     self.selected_square = None
+                    self.valid_moves = [[], []]
                 else:
                     self.selected_square = square
+                    self.valid_moves = self.engine.get_valid_moves(self.selected_square)
 
     # loop which will be executed at fixed rate (for physics, animations and such)
     def on_loop(self):
@@ -76,7 +78,6 @@ class App:
 
         self.draw_chessboard()
 
-        self.valid_moves = self.engine.get_valid_moves(self.selected_square)
         self.draw_valid_moves(self.valid_moves)
 
         self.draw_chess_pieces(self.engine.get_layout())
