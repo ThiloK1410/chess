@@ -2,7 +2,6 @@ import pygame
 
 from Chess_Engine import Engine
 
-
 class App:
     # main function from where everything is called
     def __init__(self):
@@ -22,13 +21,13 @@ class App:
 
         # images of all chess pieces
         self.valid_moves = [[], []]
-        self.valid_move_size_factor = 0.5
+        self.valid_move_size_factor = 1
         self.size_factor = 0.8
         self.piece_types = {"r": "b_rook.png", "n": "b_knight.png", "b": "b_bishop.png",
                             "q": "b_queen.png", "k": "b_king.png", "p": "b_pawn.png",
                             "R": "w_rook.png", "N": "w_knight.png", "B": "w_bishop.png",
                             "Q": "w_queen.png", "K": "w_king.png", "P": "w_pawn.png",
-                            "move": "black_circle.png", "take": "red_square.png"}
+                            "move": "valid_move.png", "take": "take_move.png"}
 
         # setting dimensions of the chessboard
         self.boundary_size = 20
