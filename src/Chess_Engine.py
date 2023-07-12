@@ -1,6 +1,10 @@
+from Chess_Layout import Layout
+
+
 class Engine:
     def __init__(self):
-        self._current_pos = [[""] * 8 for i in range(8)]
+        # self.pos = [[""] * 8 for i in range(8)]
+        self.pos = Layout(start=True)
         self.current_mode = "play"
         self.current_turn = 0
 
@@ -33,7 +37,7 @@ class Engine:
                             [None, "B", None, "K", None, None, None, None]]
 
     def get_layout(self):
-        return self._current_pos
+        return self.pos
 
     def set_layout(self, layout):
         king_pos = self.search_king(layout)
@@ -47,7 +51,7 @@ class Engine:
 
         for i in range(8):
             for j in range(8):
-                self._current_pos[i][j] = layout[i][j]
+                self.pos[i][j] = layout[i][j]
 
     # prints all state variables
     def print_vals(self):
@@ -58,7 +62,7 @@ class Engine:
         print("")
         print(f"{self.R1_moved}     {self.R8_moved}")
 
-    # gives king positions as: [[w_k], [b_k]]
+    # gives king positions as: [[white], [black]]
     def search_king(self, layout):
         out = [[None], [None]]
         for i in range(8):
@@ -77,27 +81,31 @@ class Engine:
     def moves_pawn(self, position, moves, layout, is_white):
         if is_white:
             # white moves
-            p_square = [position[0], position[1] - 1]
+            p_square = [position[0], position[1] + 1]
             if self.is_square_free(p_square, layout):
+
                 moves[0].append(p_square)
-            if position[1] == 6:
-                p_square = [position[0], position[1] - 2]
+
+            if position[1] == 1:
+
+                p_square = [position[0], position[1] + 2]
                 if self.is_square_free(p_square, layout):
                     moves[0].append(p_square)
-            p_squares = [[position[0] + 1, position[1] - 1], [position[0] - 1, position[1] - 1]]
+
+            p_squares = [[position[0] + 1, position[1] + 1], [position[0] - 1, position[1] + 1]]
             for p_square in p_squares:
                 if self.has_opposite_color(position, p_square, layout):
                     moves[1].append(p_square)
         else:
             # black moves
-            p_square = [position[0], position[1] + 1]
+            p_square = [position[0], position[1] - 1]
             if self.is_square_free(p_square, layout):
                 moves[0].append(p_square)
             if position[1] == 1:
-                p_square = [position[0], position[1] + 2]
+                p_square = [position[0], position[1] - 2]
                 if self.is_square_free(p_square, layout):
                     moves[0].append(p_square)
-            p_squares = [[position[0] + 1, position[1] + 1], [position[0] - 1, position[1] + 1]]
+            p_squares = [[position[0] + 1, position[1] - 1], [position[0] - 1, position[1] - 1]]
             for p_square in p_squares:
                 if self.has_opposite_color(position, p_square, layout):
                     moves[1].append(p_square)
@@ -107,7 +115,7 @@ class Engine:
             p_square = position
             if direction == 0:
                 while self.square_in_bounds([p_square[0], p_square[1] - 1]):
-                    p_square = [p_square[0], p_square[1] - 1]
+                    p_square = [p_square[0], p_square[1] + 1]
                     if self.is_square_free(p_square, layout):
                         moves[0].append(p_square)
                         continue
@@ -125,7 +133,7 @@ class Engine:
                     break
             if direction == 2:
                 while self.square_in_bounds([p_square[0], p_square[1] + 1]):
-                    p_square = [p_square[0], p_square[1] + 1]
+                    p_square = [p_square[0], p_square[1] - 1]
                     if self.is_square_free(p_square, layout):
                         moves[0].append(p_square)
                         continue
@@ -256,11 +264,8 @@ class Engine:
 
     # core method of Chess_Engine, used for getting all valid moves for a given square (can be empty square)
     def get_valid_moves(self, square):
-        if square is None:
-            return [[], []]
-        piece = self._current_pos[square[0]][square[1]]
-        if piece is None:
-            return [[], []]
+        piece = self.pos.layout[square[0]][square[1]]
+
         if not (self.is_white(piece) == self.is_whites_turn()):
             return [[], []]
 
@@ -269,18 +274,18 @@ class Engine:
         # adding different move sets according to piece type
         match piece.lower():
             case "p":
-                self.moves_pawn(square, moves, self._current_pos, self.is_white(piece))
+                self.moves_pawn(square, moves, self.pos, self.is_white(piece))
             case "r":
-                self.moves_rook(square, moves, self._current_pos)
+                self.moves_rook(square, moves, self.pos)
             case "n":
-                self.moves_knight(square, moves, self._current_pos)
+                self.moves_knight(square, moves, self.pos)
             case "b":
-                self.moves_bishop(square, moves, self._current_pos)
+                self.moves_bishop(square, moves, self.pos)
             case "q":
-                self.moves_rook(square, moves, self._current_pos)
-                self.moves_bishop(square, moves, self._current_pos)
+                self.moves_rook(square, moves, self.pos)
+                self.moves_bishop(square, moves, self.pos)
             case "k":
-                self.moves_king(square, moves, self._current_pos)
+                self.moves_king(square, moves, self.pos)
 
         out = [[], []]
         # filtering out invalid moves (out of bounds, king sacrifice)
@@ -297,34 +302,27 @@ class Engine:
 
     def make_move(self, move):
         # is move within turn boundaries
-        if self.is_white(self._current_pos[move[0][0]][move[0][1]]) != bool(self.current_turn % 2):
+        if self.is_white(self.pos[move[0][0]][move[0][1]]) != bool(self.current_turn % 2):
             # is the move for the selected piece possible? (is it in its moves or takes)
             if (move[1] in self.get_valid_moves(move[0])[0]) or (move[1] in self.get_valid_moves(move[0])[1]):
-                self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
-                self._current_pos[move[0][0]][move[0][1]] = None
+                self.pos.make_move(move)
                 self.current_turn += 1
 
-
-
+    @staticmethod
     # returns the possible layout after a specific move would be done
-    def get_next_layout(self, move):
-        layout = [row[:] for row in self._current_pos]
-        # checking if there is a piece to move
-        if layout[move[0][0]][move[0][1]] is None:
-            raise ValueError("Layout for invalid move requested")
-        layout[move[1][0]][move[1][1]] = layout[move[0][0]][move[0][1]]
-        layout[move[0][0]][move[0][1]] = None
+    def get_next_layout(layout, move):
+        layout.make_move(move)
         return layout
 
     def is_square_free(self, square, layout):
         if self.square_in_bounds(square):
-            if layout[square[0]][square[1]] is None:
+            if layout.layout[square[0]][square[1]] == "":
                 return True
         return False
 
     # returns True if white, False if black and None if square is empty
     def is_white(self, piece):
-        if piece is None:
+        if piece == "":
             return None
         if piece.isupper():
             return True
@@ -338,8 +336,8 @@ class Engine:
         if self.is_square_free(square1, layout) or self.is_square_free(square2, layout):
             return False
         if self.square_in_bounds(square1) and self.square_in_bounds(square2):
-            piece1 = layout[square1[0]][square1[1]]
-            piece2 = layout[square2[0]][square2[1]]
+            piece1 = layout.layout[square1[0]][square1[1]]
+            piece2 = layout.layout[square2[0]][square2[1]]
             if self.is_white(piece1) == (not self.is_white(piece2)):
                 return True
         return False
