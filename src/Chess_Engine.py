@@ -4,6 +4,16 @@ class Engine:
         self.current_mode = "play"
         self.current_turn = 0
 
+        # game state variables
+        self.king_pos = None
+
+        self.k_moved = False
+        self.K_moved = False
+        self.r1_moved = False
+        self.r8_moved = False
+        self.R1_moved = False
+        self.R8_moved = False
+
         self.start_pos = [['r', 'p', None, None, None, None, 'P', 'R'],
                           ['n', 'p', None, None, None, None, 'P', 'N'],
                           ['b', 'p', None, None, None, None, 'P', 'B'],
@@ -26,9 +36,43 @@ class Engine:
         return self._current_pos
 
     def set_layout(self, layout):
+        king_pos = self.search_king(layout)
+        self.king_pos = king_pos
+        self.k_moved = not king_pos[1] == [4, 0]
+        self.K_moved = not king_pos[0] == [4, 7]
+        self.r1_moved = not layout[0][0] == "r"
+        self.r8_moved = not layout[7][0] == "r"
+        self.R1_moved = not layout[0][7] == "R"
+        self.R8_moved = not layout[7][7] == "R"
+
         for i in range(8):
             for j in range(8):
                 self._current_pos[i][j] = layout[i][j]
+
+    # prints all state variables
+    def print_vals(self):
+        print(f"the kings were moved: w:{self.K_moved}  b:{self.k_moved}")
+        print(f"king position: w:{self.king_pos[0]}  b:{self.king_pos[1]}")
+        print("the rooks were moved:")
+        print(f"{self.r1_moved}     {self.r8_moved}")
+        print("")
+        print(f"{self.R1_moved}     {self.R8_moved}")
+
+    # gives king positions as: [[w_k], [b_k]]
+    def search_king(self, layout):
+        out = [[None], [None]]
+        for i in range(8):
+            for j in range(8):
+                # is square occupied?
+                if layout[i][j] is not None:
+                    # is there a king on the square?
+                    if layout[i][j].lower() == "k":
+                        # is the king of the correct color?
+                        if layout[i][j].isupper():
+                            out[0] = [i, j]
+                        else:
+                            out[1] = [i, j]
+        return out
 
     def moves_pawn(self, position, moves, layout, is_white):
         if is_white:
@@ -160,20 +204,12 @@ class Engine:
             elif self.has_opposite_color(position, p_square, layout):
                 moves[1].append(p_square)
 
+    def moves_rochade(self, layout):
+        pass
+
     def is_in_check(self, layout, white):
         moves = [[], []]
-        king_pos = []
-        # search for the king
-        for i in range(8):
-            for j in range(8):
-                # is square occupied?
-                if layout[i][j] is not None:
-                    # is there a king on the square?
-                    if layout[i][j].lower() == "k":
-                        # is the king of the correct color?
-                        if layout[i][j].isupper() == white:
-                            king_pos = [i, j]
-                            break
+        king_pos = self.search_king(layout)[int(not white)]
 
         # checking for checks by looking backwards if pieces hit king
         self.moves_pawn(king_pos, moves, layout, white)
@@ -218,7 +254,6 @@ class Engine:
 
         return False
 
-
     # core method of Chess_Engine, used for getting all valid moves for a given square (can be empty square)
     def get_valid_moves(self, square):
         if square is None:
@@ -261,11 +296,15 @@ class Engine:
         return out
 
     def make_move(self, move):
+        # is move within turn boundaries
         if self.is_white(self._current_pos[move[0][0]][move[0][1]]) != bool(self.current_turn % 2):
+            # is the move for the selected piece possible? (is it in its moves or takes)
             if (move[1] in self.get_valid_moves(move[0])[0]) or (move[1] in self.get_valid_moves(move[0])[1]):
                 self._current_pos[move[1][0]][move[1][1]] = self._current_pos[move[0][0]][move[0][1]]
                 self._current_pos[move[0][0]][move[0][1]] = None
                 self.current_turn += 1
+
+
 
     # returns the possible layout after a specific move would be done
     def get_next_layout(self, move):

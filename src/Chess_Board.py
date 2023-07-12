@@ -42,7 +42,7 @@ class App:
         self.display = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
 
-        self.engine.set_layout(self.engine.start_pos)
+        self.engine.set_layout(self.engine.test_layout)
 
         self.on_execute()
 
@@ -59,6 +59,7 @@ class App:
             if mouse_buttons[0]:
                 mouse_pos = pygame.mouse.get_pos()
                 square = list(self.coordinate_to_square(mouse_pos))
+                self.engine.print_vals()
                 if (square in self.valid_moves[0]) or (square in self.valid_moves[1]):
                     self.engine.make_move([self.selected_square, square])
                     self.selected_square = None
@@ -197,7 +198,6 @@ class App:
                 position[0] + self.square_size / 2, position[1] + self.square_size / 2
             )
             self.display.blit(image, image_rect)
-
 
     # converts window coordinates to square indexes
     def coordinate_to_square(self, coordinates):
