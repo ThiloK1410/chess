@@ -24,7 +24,7 @@ class Layout:
 
             self.king_pos = [[4, 0], [4, 7]]
         else:
-            self
+            pass
 
         self.lin_layout = np.array([0] * 64, dtype="short")
 
@@ -34,6 +34,23 @@ class Layout:
 
         self.layout[move[1][0]][move[1][1]] = self.layout[move[0][0]][move[0][1]]
         self.layout[move[0][0]][move[0][1]] = ""
+
+        match self.get_piece(move[0]):
+            case "k":
+                self.k_moved = True
+            case "K":
+                self.K_moved = True
+            case "r":
+                if move[0][0] == 0:
+                    self.r1_moved = True
+                elif move[0][0] == 7:
+                    self.r8_moved = True
+            case "R":
+                if move[0][0] == 0:
+                    self.R1_moved = True
+                elif move[0][0] == 7:
+                    self.R8_moved = True
+
         return self
 
     def place(self, square, piece):
@@ -43,6 +60,9 @@ class Layout:
     def remove(self, square):
         self.layout[square[0]][square[1]] = ""
         return self
+
+    def get_piece(self, square):
+        return self.layout[square[0]][square[1]]
 
     @staticmethod
     def to_from_linear(layout):

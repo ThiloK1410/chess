@@ -212,8 +212,9 @@ class Engine:
             elif self.has_opposite_color(position, p_square, layout):
                 moves[1].append(p_square)
 
-    def moves_rochade(self, layout):
-        pass
+    def moves_rochade(self, position, moves, layout):
+        if position == [4, 0]:
+            pass
 
     def is_in_check(self, layout, white):
         moves = [[], []]
